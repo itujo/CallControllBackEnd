@@ -1,8 +1,10 @@
-import { User } from "@models/User";
+import User from '@models/User';
 
-export class UserController {
-  teste() {
+class UserController {
+  teste = () => {
     const user = new User();
-    
+    user.name = 'Josivaldo';
   }
 }
+
+export default UserController;
