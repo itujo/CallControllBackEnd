@@ -1,10 +1,16 @@
-import express from 'express';
-import '@controllers/UserController'
+import express, { Application, Request, Response } from 'express';
+import cors from 'cors';
+import '@controllers/UserController';
+import bodyParser from 'body-parser';
 
-const app = express();
+const app: Application = express();
 
-app.get('/', (req, res)=> {
-  return res.status(200).json({ message: 'Hello World'})
-})
+const port = 3333;
 
-app.listen(3333);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.get('/', (req: Request, res: Response) => res.status(200).json({ message: 'Hello World' }));
+
+// eslint-disable-next-line no-console
+app.listen(port, () => console.log(`Application started successfully on port ${port}.`));
