@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
-
 import mongoose from 'mongoose';
 
-import Calls from '@models/Call';
+import Calls, { ICall } from '@models/Call';
 import Bases from '@models/Bases';
 
 mongoose.set('useNewUrlParser', true);
@@ -15,7 +14,7 @@ export default module.exports = {
   async index(req:Request, res: Response) {
     Calls.find()
       .populate('base', 'name')
-      .exec((err: Error, calls: JSON) => {
+      .exec((err: Error, calls: Array<ICall>) => {
         if (err) return res.status(500).json({ err });
 
         return res.status(200).json({ calls });
@@ -26,7 +25,7 @@ export default module.exports = {
   async show(req: Request, res: Response) {
     Calls.findById(req.params.id)
       .populate('base', 'name')
-      .exec((err: Error, call: JSON) => {
+      .exec((err: Error, call: ICall) => {
         if (err) return res.status(500).json(err);
 
         return res.status(200).json(call);
@@ -36,7 +35,7 @@ export default module.exports = {
   // SALVAR CHAMADO
   async store(req: Request, res: Response) {
     try {
-      const call = await Calls.create(req.body);
+      const call: ICall = await Calls.create(req.body);
 
       Bases.findOneAndUpdate(
         { _id: req.body.base },
@@ -48,7 +47,7 @@ export default module.exports = {
           return res.status(201).json({ message: 'Chamado inserido com sucesso!', call });
         },
       );
-    } catch (erro) {
+    } catch (erro: any) {
       res.status(400).json({
         message: erro.message,
         erro,
@@ -58,7 +57,7 @@ export default module.exports = {
 
   // ATUALIZAR CHAMADO
   async update(req: Request, res: Response) {
-    const call = await Calls.findByIdAndUpdate(req.params.id, req.body, {
+    const call: ICall = await Calls.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
 
