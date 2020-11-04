@@ -1,32 +1,32 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
 
 export interface ICall extends Document {
-  callId: string;
-  callType: string;
-  fullName: string;
-  cpf: string;
-  address: string;
-  cep: string;
-  city: string;
-  resPhone: string;
-  comercialPhone: string;
-  cellPhone: string;
-  cellPhone2: string;
-  email: string;
-  nfe: string;
+  callId: String;
+  callType: String;
+  fullName: String;
+  cpf: String;
+  address: String;
+  cep: String;
+  city: String;
+  resPhone: String;
+  comercialPhone: String;
+  cellPhone: String;
+  cellPhone2: String;
+  email: String;
+  nfe: String;
   nfeEmiss: Date;
-  romaneio: string;
-  router: string;
-  sellType: string;
+  romaneio: String;
+  router: String;
+  sellType: String;
   prevDate: Date;
-  isOpen: boolean;
-  observation: string;
+  isOpen: Boolean;
+  observation: String;
   base: mongoose.Schema.Types.ObjectId;
   createdAt: Date;
 }
 
-const CallSchema: Schema = new mongoose.Schema({
+export const CallSchema: Schema = new mongoose.Schema({
   callId: {
     type: String,
     unique: true,
@@ -119,7 +119,6 @@ const CallSchema: Schema = new mongoose.Schema({
     default: Date.now,
   },
 });
-
 CallSchema.plugin(uniqueValidator);
 
 export default mongoose.model<ICall>('Call', CallSchema);
