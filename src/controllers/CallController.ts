@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Request, Response } from 'express';
 
 import mongoose from 'mongoose';
@@ -35,7 +34,7 @@ export default module.exports = {
   },
 
   // SALVAR CHAMADO
-  async store(req, res) {
+  async store(req: Request, res: Response) {
     try {
       const call = await Calls.create(req.body);
 
@@ -43,28 +42,22 @@ export default module.exports = {
         { _id: req.body.base },
         // eslint-disable-next-line no-underscore-dangle
         { $push: { calls: call._id } },
-        (error, success) => {
-          if (error) {
-            console.log(error);
-          } else {
-            console.log(success);
-          }
+        (error: Error) => {
+          if (error) return res.status(500).json({ error });
+
+          return res.status(201).json({ message: 'Chamado inserido com sucesso!', call });
         },
       );
-      return res.status(201).json(call);
     } catch (erro) {
-      console.log(erro);
       res.status(400).json({
-        message:
-          'Falha ao inserir chamado, o número do chamado deve ser único!',
+        message: erro.message,
         erro,
       });
     }
-    return res.json({ message: 'test' });
   },
 
   // ATUALIZAR CHAMADO
-  async update(req, res) {
+  async update(req: Request, res: Response) {
     const call = await Calls.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
@@ -73,12 +66,11 @@ export default module.exports = {
   },
 
   // DELETAR CHAMADO
-  async destroy(req, res) {
-    // const call = await Calls.findByIdAndDelete(req.params.id);
+  async destroy(req: Request, res: Response) {
+    const call = await Calls.findByIdAndDelete(req.params.id);
 
-    return res.status(201).json({
-      // mensagem: `Chamado de numero ${call.callId} deletado  com sucesso!`,
-      mensagem: 'deletado',
+    return res.status(200).json({
+      mensagem: `Chamado de numero ${call.callId} deletado  com sucesso!`,
     });
   },
 };
