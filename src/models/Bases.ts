@@ -7,7 +7,6 @@ const AutoIncrement = require('mongoose-sequence')(mongoose);
 export interface IBase extends Document {
   name: String;
   calls: [Schema.Types.ObjectId];
-
 }
 
 const BaseSchema: Schema = new Schema({

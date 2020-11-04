@@ -1,18 +1,20 @@
+import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 
-const Bases = mongoose.model('Base');
+// import Calls from '@models/Call';
+import Bases from '@models/Bases';
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 
-const BasesMod = {
+export default module.exports = {
   // LISTAR TODOS OS CHAMADO
-  async index(req, res) {
+  async index(req: Request, res: Response) {
     Bases.find()
       .populate('calls', 'callId')
-      .exec((err, base) => {
+      .exec((err: Error, base: JSON) => {
         if (err) return res.status(500).json(err);
 
         return res.status(200).json(base);
@@ -20,28 +22,27 @@ const BasesMod = {
   },
 
   // MAIS INFORMAÇÕES DO CHAMADO ID
-  async show(req, res) {
+  async show(req: Request, res: Response) {
     const base = await Bases.findById(req.params.id);
 
     return res.status(200).json(base);
   },
 
   // SALVAR CHAMADO
-  async store(req, res) {
+  async store(req: Request, res: Response) {
     try {
       const base = await Bases.create(req.body);
 
       return res.status(201).json(base);
-    } catch (error) {
+    } catch (error: any) {
       return res.status(400).json({
-        message: 'Falha ao inserir base, o nome da base deve ser único!',
-        debug: error,
+        error,
       });
     }
   },
 
   // ATUALIZAR CHAMADO
-  async update(req, res) {
+  async update(req: Request, res: Response) {
     const base = await Bases.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
@@ -50,7 +51,7 @@ const BasesMod = {
   },
 
   // DELETAR CHAMADO
-  async destroy(req, res) {
+  async destroy(req: Request, res: Response) {
     const base = await Bases.findByIdAndDelete(req.params.id);
 
     return res.status(201).json({
@@ -58,5 +59,3 @@ const BasesMod = {
     });
   },
 };
-
-export default BasesMod;
