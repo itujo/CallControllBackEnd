@@ -41,6 +41,7 @@ export default module.exports = {
         { _id: req.body.base },
         // eslint-disable-next-line no-underscore-dangle
         { $push: { calls: call._id } },
+        { new: true },
         (error: Error) => {
           if (error) return res.status(500).json({ error });
 
