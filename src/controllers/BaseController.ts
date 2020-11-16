@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 
-// import Calls from '@models/Call';
 import Bases, { IBase } from '@models/Bases';
 
 mongoose.set('useNewUrlParser', true);

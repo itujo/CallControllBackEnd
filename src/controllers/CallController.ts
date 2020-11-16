@@ -33,6 +33,7 @@ export default module.exports = {
   },
 
   // SALVAR CHAMADO
+  // eslint-disable-next-line consistent-return
   async store(req: Request, res: Response) {
     try {
       const call: ICall = await Calls.create(req.body);
@@ -49,7 +50,7 @@ export default module.exports = {
         },
       );
     } catch (erro: any) {
-      res.status(400).json({
+      return res.status(400).json({
         message: erro.message,
         erro,
       });

@@ -10,16 +10,9 @@ export interface IBase extends Document {
 }
 
 const BaseSchema: Schema = new Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-  },
+  name: { type: String, required: true, unique: true },
   calls: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Call',
-    },
+    { type: Schema.Types.ObjectId, ref: 'Call' },
   ],
 });
 

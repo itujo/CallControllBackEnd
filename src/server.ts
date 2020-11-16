@@ -1,3 +1,5 @@
+/* eslint-disable global-require */
+/* eslint-disable no-console */
 import express, { Application } from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
@@ -22,13 +24,10 @@ mongoose.connect(`mongodb://${ip}:27017/mongo`, {
 
 const db = mongoose.connection;
 
-// eslint-disable-next-line no-console
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
   requireDir('./models');
 
-  // eslint-disable-next-line global-require
   app.use('/api', require('./routes'));
-  // eslint-disable-next-line no-console
   app.listen(port, () => console.log(`Application started successfully on port ${port}.`));
 });
