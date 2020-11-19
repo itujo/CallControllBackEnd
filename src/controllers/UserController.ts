@@ -9,7 +9,6 @@ mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 
 export default module.exports = {
-  // LISTAR TODOS OS CHAMADO
   async index(req: Request, res: Response) {
     Users.find()
       .populate('openedCalls', 'callId')
