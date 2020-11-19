@@ -3,7 +3,6 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
-// import requireDir from 'require-dir';
 import morgan from 'morgan';
 
 import routes from './routes';
@@ -27,8 +26,6 @@ const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
-  // requireDir('./models');
-
   app.use('/api', routes);
   app.listen(port, () => console.log(`Application started successfully on port ${port}.`));
 });
