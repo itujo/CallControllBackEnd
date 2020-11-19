@@ -23,35 +23,39 @@ export interface ICall extends Document {
   isOpen: Boolean;
   observation: String;
   base: mongoose.Schema.Types.ObjectId;
+  user: mongoose.Schema.Types.ObjectId;
   createdAt: Date;
 }
 
-export const CallSchema: Schema = new mongoose.Schema({
-  callId: { type: String, unique: true },
+const CallSchema: Schema = new mongoose.Schema({
+  callId: { type: String, unique: true, required: [true, 'Número de chamado'] },
   callType: { type: String, required: true },
   fullName: { type: String, required: true },
   cpf: { type: String },
-  address: { type: String, required: true },
-  cep: { type: String, required: true },
-  city: { type: String, required: true },
-  resPhone: { type: String, required: true },
-  comercialPhone: { type: String, required: false },
-  cellPhone: { type: String, required: true },
-  cellPhone2: { type: String, required: false },
-  email: { type: String, required: true },
-  nfe: { type: String, required: true, unique: true },
-  nfeEmiss: { type: Date, required: true },
-  romaneio: { type: String, required: true },
-  router: { type: String, required: true },
-  sellType: { type: String, required: true },
-  prevDate: { type: Date, required: true },
-  isOpen: { type: Boolean, required: true, default: true },
-  observation: { type: String, required: false },
+  address: { type: String, required: [true, 'Endereço'] },
+  cep: { type: String, required: [true, 'CEP'] },
+  city: { type: String, required: [true, 'Cidade'] },
+  resPhone: { type: String, required: [true, 'Telefone'] },
+  comercialPhone: { type: String },
+  cellPhone: { type: String, required: [true, 'Celular'] },
+  cellPhone2: { type: String },
+  email: { type: String, required: [true, 'EmaiL'] },
+  nfe: { type: String, required: [true, 'NFE'] },
+  nfeEmiss: { type: Date, required: [true, 'Data de emissão NFE'] },
+  romaneio: { type: String, required: [true, 'Romaneio'] },
+  router: { type: String, required: [true, 'Roteiro'] },
+  sellType: { type: String, required: [true, 'Tipo de venda'] },
+  prevDate: { type: Date, required: [true, 'Previsão de retorno'] },
+  isOpen: { type: Boolean, required: [true, 'Status'], default: true },
+  observation: { type: String },
   base: {
-    type: mongoose.Schema.Types.ObjectId, ref: 'Base', required: true, default: null,
+    type: mongoose.Schema.Types.ObjectId, ref: 'Base', required: [true, 'Base'],
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId, ref: 'User', required: [true, 'Usuário'],
   },
   createdAt: { type: Date, default: Date.now },
 });
-CallSchema.plugin(uniqueValidator);
+CallSchema.plugin(uniqueValidator, { message: 'Número de chamado já cadastrado' });
 
 export default mongoose.model<ICall>('Call', CallSchema);

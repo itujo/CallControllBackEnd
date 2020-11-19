@@ -1,8 +1,12 @@
-import { Request, Response } from 'express';
+/* eslint-disable no-underscore-dangle */
+import {
+  NextFunction, Request, Response,
+} from 'express';
 import mongoose from 'mongoose';
 
 import Calls, { ICall } from '@models/Call';
 import Bases from '@models/Bases';
+import Users from '@models/Users';
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
@@ -10,10 +14,11 @@ mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 
 export default module.exports = {
-  // LISTAR TODOS OS CHAMADO
+
   async index(req:Request, res: Response) {
     Calls.find()
       .populate('base', 'name')
+      .populate('user', 'login')
       .exec((err: Error, calls: Array<ICall>) => {
         if (err) return res.status(500).json({ err });
 
@@ -21,10 +26,10 @@ export default module.exports = {
       });
   },
 
-  // MAIS INFORMAÇÕES DO CHAMADO ID
   async show(req: Request, res: Response) {
     Calls.findById(req.params.id)
       .populate('base', 'name')
+      .populate('user', 'login')
       .exec((err: Error, call: ICall) => {
         if (err) return res.status(500).json(err);
 
@@ -32,32 +37,36 @@ export default module.exports = {
       });
   },
 
-  // SALVAR CHAMADO
-  // eslint-disable-next-line consistent-return
-  async store(req: Request, res: Response) {
+  async store(req: Request, res: Response, next: NextFunction) {
     try {
       const call: ICall = await Calls.create(req.body);
 
       Bases.findOneAndUpdate(
         { _id: req.body.base },
-        // eslint-disable-next-line no-underscore-dangle
         { $push: { calls: call._id } },
         { new: true },
         (error: Error) => {
           if (error) return res.status(500).json({ error });
 
-          return res.status(201).json({ message: 'Chamado inserido com sucesso!', call });
+          return next();
         },
       );
-    } catch (erro: any) {
-      return res.status(400).json({
-        message: erro.message,
-        erro,
-      });
+
+      Users.findOneAndUpdate(
+        { _id: req.body.user },
+        { $push: { openedCalls: call._id } },
+        { new: true }, (error: Error) => {
+          if (error) return res.status(500).json({ error });
+          return next();
+        },
+      );
+
+      return res.status(201).json({ message: 'Chamado inserido com sucesso!', call });
+    } catch (errors: any) {
+      return res.status(400).send(errors);
     }
   },
 
-  // ATUALIZAR CHAMADO
   async update(req: Request, res: Response) {
     const call: ICall = await Calls.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -66,12 +75,32 @@ export default module.exports = {
     return res.status(201).json(call);
   },
 
-  // DELETAR CHAMADO
-  async destroy(req: Request, res: Response) {
+  async destroy(req: Request, res: Response, next: NextFunction) {
     const call = await Calls.findByIdAndDelete(req.params.id);
 
-    return res.status(200).json({
-      mensagem: `Chamado de numero ${call.callId} deletado  com sucesso!`,
-    });
+    Bases.findOneAndUpdate(
+      { _id: call.base },
+
+      { $pull: { calls: call._id } },
+      { new: true },
+      (error: Error) => {
+        if (error) return res.status(500).json({ error });
+
+        return next();
+      },
+    );
+
+    Users.findOneAndUpdate(
+      { _id: call.user },
+
+      { $pull: { openedCalls: call._id, closedCalls: call._id } },
+      { new: true },
+      (error: Error) => {
+        if (error) return res.status(500).json({ error });
+
+        return next();
+      },
+    );
+    return res.status(202).json({ message: `Chamado ${call.callId} deletado com sucesso!` });
   },
 };

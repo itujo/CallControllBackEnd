@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 
-import Bases, { IBase } from '@models/Bases';
+import Users, { IUser } from '@models/Users';
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
@@ -9,31 +9,30 @@ mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 
 export default module.exports = {
+  // LISTAR TODOS OS CHAMADO
   async index(req: Request, res: Response) {
-    Bases.find()
-      .populate('calls', 'callId')
-      .exec((err: Error, base: IBase) => {
+    Users.find()
+      .populate('openedCalls', 'callId')
+      .exec((err: Error, user: IUser) => {
         if (err) return res.status(500).json(err);
 
-        return res.status(200).json(base);
+        return res.status(200).json(user);
       });
   },
 
   async show(req: Request, res: Response) {
-    Bases.findById(req.params.id)
-      .populate('calls', 'callId')
-      .exec((err: Error, base: IBase) => {
-        if (err) return res.status(500).json(err);
+    Users.findById(req.params.id).populate('openedCalls', 'callId').exec((err:Error, user: IUser) => {
+      if (err) return res.status(500).json(err);
 
-        return res.status(200).json(base);
-      });
+      return res.status(200).json(user);
+    });
   },
 
   async store(req: Request, res: Response) {
     try {
-      const base: IBase = await Bases.create(req.body);
+      const user: IUser = await Users.create(req.body);
 
-      return res.status(201).json(base);
+      return res.status(201).json(user);
     } catch (error: any) {
       return res.status(400).json({
         error,
@@ -42,18 +41,18 @@ export default module.exports = {
   },
 
   async update(req: Request, res: Response) {
-    const base: IBase = await Bases.findByIdAndUpdate(req.params.id, req.body, {
+    const user: IUser = await Users.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
 
-    return res.status(201).json(base);
+    return res.status(201).json(user);
   },
 
   async destroy(req: Request, res: Response) {
-    const base: IBase = await Bases.findByIdAndDelete(req.params.id);
+    const user: IUser = await Users.findByIdAndDelete(req.params.id);
 
     return res.status(200).json({
-      mensagem: `Base ${base.id} deletada  com sucesso!`,
+      mensagem: `Usuario ${user.id} deletado  com sucesso!`,
     });
   },
 };
